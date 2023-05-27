@@ -1,0 +1,52 @@
+.member-item {
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    text-align: center;
+    transition: all 0.2s ease-in-out;
+    width: 100%;
+  }
+  
+  .member-item:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    transform: translateY(-5px);
+  }
+  
+  .member-item .lab-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+  }
+  
+  .member-item .lab-thumb {
+    height: 100px;
+    margin: auto;
+    overflow: hidden;
+    width: 100px;
+  }
+  
+  .member-item .lab-thumb img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
+  
+  .member-item .lab-content {
+    margin-top: 10px;
+    text-align: center;
+  }
+  
+  .member-item .lab-content h6 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+  }
+  
+  .member-item .lab-content p {
+    color: #666;
+    font-size: 14px;
+    margin: 5px 0 0;
+  }
+  
