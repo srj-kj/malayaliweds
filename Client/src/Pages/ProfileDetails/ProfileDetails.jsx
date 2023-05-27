@@ -25,7 +25,7 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
-    if(profileData){
+    if (profileData) {
       axios
         .post(`/follow`, { follower: profileData?._id, user: user.id })
         .then((response) => {
@@ -40,11 +40,11 @@ const Profile = () => {
 
   const handleFollow = (followingId, followerId) => {
     axios.post(`/connect/`, { followingId, user: user.id }).then((response) => {
-      console.log(response.data)
-      if(response.data.msg=="Follow successful"){
-        setFollow(true)
-      }else{
-        setFollow(false)
+      console.log(response.data);
+      if (response.data.msg == "Follow successful") {
+        setFollow(true);
+      } else {
+        setFollow(false);
       }
     });
   };
@@ -77,7 +77,13 @@ const Profile = () => {
                   href="#"
                   className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded"
                 >
-                  {follow ? "unfollow" : "follow"}
+                  {follow
+                    ? "Unfollow"
+                    : profileData?.following.some(
+                        (follower) => follower.followId === user.id
+                      )
+                    ? "Follow Back"
+                    : "Follow"}
                 </button>
               </div>
             </div>
