@@ -25,19 +25,28 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
-    axios
-      .post(`/follow/`, { follower: profileData?._id, user: user.id })
-      .then((response) => {
-        if (response.data) {
-          setFollow(true);
-        } else {
-          setFollow(false);
-        }
-      });
-  },[]);
+    if(profileData){
+      axios
+        .post(`/follow`, { follower: profileData?._id, user: user.id })
+        .then((response) => {
+          if (response.data) {
+            setFollow(true);
+          } else {
+            setFollow(false);
+          }
+        });
+    }
+  }, [profileData]);
 
   const handleFollow = (followingId, followerId) => {
-    axios.post(`/connect/`, { followingId, user: user.id });
+    axios.post(`/connect/`, { followingId, user: user.id }).then((response) => {
+      console.log(response.data)
+      if(response.data.msg=="Follow successful"){
+        setFollow(true)
+      }else{
+        setFollow(false)
+      }
+    });
   };
 
   return (

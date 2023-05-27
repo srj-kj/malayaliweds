@@ -348,11 +348,40 @@ router.post("/connect/", async (req, res) => {
   console.log(req.body);
 
   const follower = await User.findById(req.body.user).select(
-    "_id username email"
+    "_id username email following followers"
   );
   const follow = await User.findById(req.body.followingId).select(
-    "_id username email"
+    "_id username email following followers"
   );
+
+  console.log(follower);
+  console.log(follow);
+  
+  
+
+  const isFollowing = follower?.following.some(
+    (obj) => obj.followId == req.body.followingId
+  );
+
+  console.log(isFollowing);
+  
+
+  if (isFollowing) {
+    console.log('hi');
+    await User.findByIdAndUpdate(
+      follower?._id,
+      { $pull: { following: { followId: follow?._id } } },
+      { new: true }
+    );
+
+    await User.findByIdAndUpdate(
+      follow?._id,
+      { $pull: { followers: { followerId: follower?._id } } },
+      { new: true }
+    );
+
+   return res.status(200).json({ msg: "Unfollow successful" });
+  }
 
   const followers = {
     followerId: follower?._id,
@@ -387,10 +416,21 @@ router.post("/connect/", async (req, res) => {
 
 router.post("/follow", async (req, res) => {
   const following = await User.findById(req.body.user);
+  console.log("++++++++++++++++&&&&&&&&&&&++++++++++++++++++++++");
+  console.log(req.body);
+  console.log("++++++++++++++++++++++++++++++++++++++");
+  
+  console.log(following?.following);
+
+  console.log("++++++++++++++++&&&&&&&&&&&&&&&&&++++++++++++++++++++++");
+
+  
   const checked: any = following?.following.some(
     (obj) => obj.followId == req.body.follower
   );
 
+  console.log('renderinggg');
+  
   console.log(checked);
   res.status(200).json(checked);
 });
