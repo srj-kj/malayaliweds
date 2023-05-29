@@ -16,6 +16,12 @@ const userschema = new Schema({
     required: true,
 
   },
+  profileId:{
+    type:Number,
+    required: true,
+    unique: true,
+    maxLength: 5,
+  },
   dob: {
     type: "string",
     required: true,

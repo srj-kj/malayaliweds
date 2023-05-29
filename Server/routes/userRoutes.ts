@@ -17,6 +17,7 @@ import {
   postreligion,
   profile,
   search,
+  searchProfile,
   signup,
 } from "../controller/userController";
 import User from "../model/userSchema";
@@ -57,5 +58,7 @@ router.post("/follow", userAuthMiddleware, follow);
 router.post("/block/", userAuthMiddleware, block);
 
 router.post("/checkblock", userAuthMiddleware, checkBlock);
+
+router.post("/searchById", userAuthMiddleware, searchProfile);
 
 export default router;

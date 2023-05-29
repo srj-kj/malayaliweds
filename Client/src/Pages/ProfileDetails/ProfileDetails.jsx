@@ -72,7 +72,9 @@ const Profile = () => {
       }
     });
   };
-
+  if (!profileData) {
+    return <div>Profile not found</div>;
+  }
   return (
     <div>
       <Header />

@@ -27,7 +27,7 @@ const ProfileTop = () => {
           />
           <div>
             <h6 className="text-sm mt-5 ml-4 font-small ">
-              {user.username} (5381928)
+              {user.username} ({user.profileId})
             </h6>
             <div>
               <div className="flex flex-wrap items-center col-span-12 text-sm sm:col-span-8 md:col-span-6 lg:col-span-6 py-0 px-4">

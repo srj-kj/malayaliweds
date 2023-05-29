@@ -15,6 +15,10 @@ const oAuth2Client = new OAuth2Client(
   "postmessage"
 );
 
+function generateProfileId() {
+  return Math.floor(10000 + Math.random() * 90000);
+}
+
 export const login = async (req: Request, res: Response) => {
   try {
     const email = req.body.email;
@@ -48,6 +52,7 @@ export const login = async (req: Request, res: Response) => {
       phone: user.phone,
       dob: user.dob,
       gender: user.gender,
+      profileId:user.profileId,
       accessToken,
     };
     res.status(200).json(data);
@@ -79,7 +84,22 @@ export const signup = async (req: Request, res: Response) => {
     if (userFind) {
       return res.status(400).json({ message: "User Exist" });
     }
+    let profileId = generateProfileId();
+    let isUnique = false;
 
+    // Generate a unique 5-digit profile ID
+    while (!isUnique) {
+      const existingProfile = await User.findOne({ profileId });
+      if (existingProfile) {
+        // If profile ID already exists, generate a new one
+        profileId = generateProfileId();
+      } else {
+        // Profile ID is unique
+        isUnique = true;
+      }
+    }
+
+    user.profileId = profileId;
     const password = await bcrypt.hash(req.body.password, 10);
     user.password = password;
     await User.create(user);
@@ -112,7 +132,12 @@ export const googleAuth = async (req: Request, res: Response) => {
         isGoogleRegister: true,
       };
 
-      await User.create(userField);
+      const gUser = await User.create(userField);
+      const accessToken = jwt.sign(
+        { userId: gUser?._id.toString() },
+        process.env.JWT_SECRET as string,
+        { expiresIn: "2d" }
+      );
 
       const details = {
         email: data.email,
@@ -451,9 +476,19 @@ export const search = async (req: Request, res: Response) => {
 };
 
 export const profile = async (req: Request, res: Response) => {
-  const profile = await User.findById(req.params.id).select("-password").exec();
+  try {
+    const profile = await User.findById(req.params.id)
+      .select("-password")
+      .exec();
 
-  res.status(200).json(profile);
+    if (!profile) {
+      return res.status(404).json({ error: "Profile not found" });
+    }
+
+    res.status(200).json(profile);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 };
 
 export const connection = async (req: Request, res: Response) => {
@@ -592,4 +627,29 @@ export const checkBlock = async (req: Request, res: Response) => {
     (obj) => obj.blockedUserId == req.body.blockedUserId
   );
   res.status(200).json(checked);
+};
+
+export const searchProfile = async (req: Request, res: Response) => {
+  try {
+    const searchTerm = req.body.search;
+    const profiles = await User.find({
+      $or: [
+        { email: { $regex: searchTerm, $options: "i" } },
+        {
+          profileId: isNaN(searchTerm)
+            ? { $regex: searchTerm, $options: "i" }
+            : parseInt(searchTerm),
+        },
+        { phone: { $regex: searchTerm, $options: "i" } },
+      ],
+    }).select("_id");
+
+    if (profiles.length === 0) {
+      return res.status(404).json({ error: "No profiles found" });
+    }
+
+    res.status(200).json(profiles);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 };

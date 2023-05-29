@@ -20,14 +20,17 @@ const userAuthMiddleware = (
   ) {
     token = req.headers.authorization.split(" ")[1];
   }
+  
   if (!token) {
     console.log("no token");
   }
+  let payload;
   try {
-    const { payload }: any = jwt.verify(
+     payload = jwt.verify(
       token,
       process.env.JWT_SECRET as string
     );
+    
     if (!payload) {
         throw new Error("Invalid token");
       }
