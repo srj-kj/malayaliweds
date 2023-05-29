@@ -161,7 +161,15 @@ const userschema = new Schema({
   following:{
     type:Array,
     default:[]
-  }
+  },
+  blockedUsers:{
+    type:Array,
+    default:[]
+  },
+  blockingUsers:{
+    type:Array,
+    default:[]
+  },
 });
 
 const User = model("users", userschema, "users");

@@ -9,10 +9,6 @@ const app = express();
 const Port = 3000;
 
 app.use(express.json());
-const corsOptions = {
-  origin: ['http://localhost:5173', 'http://localhost:8000'], // Allow requests from this origin
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-}
 app.use(cors())
 app.use(express.urlencoded({ extended:true }))
 

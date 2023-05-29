@@ -11,9 +11,11 @@ const userSlice = createSlice({
   initialState: userState,
   reducers: {
     login: (state, action) => {
+      localStorage.setItem("token",action.payload.accessToken);
       return { isLogged: true, user: action.payload };
     },
     logout: (state) => {
+      localStorage.removeItem('token');
       return userState;
     },
   },

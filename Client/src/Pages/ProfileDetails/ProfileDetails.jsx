@@ -9,6 +9,7 @@ import Footer from "../../Components/Footer/Footer";
 const Profile = () => {
   const [profileData, setProfileData] = useState(null);
   const [follow, setFollow] = useState(false);
+  const [block, setBlock] = useState(false);
   const { id } = useParams();
   const user = useSelector((state) => state?.app?.user);
 
@@ -37,6 +38,19 @@ const Profile = () => {
         });
     }
   }, [profileData]);
+  useEffect(() => {
+    if (profileData) {
+      axios
+        .post(`/checkblock`, { blockedUserId: profileData?._id, user: user.id })
+        .then((response) => {
+          if (response.data) {
+            setBlock(true);
+          } else {
+            setBlock(false);
+          }
+        });
+    }
+  }, [profileData]);
 
   const handleFollow = (followingId, followerId) => {
     axios.post(`/connect/`, { followingId, user: user.id }).then((response) => {
@@ -45,6 +59,16 @@ const Profile = () => {
         setFollow(true);
       } else {
         setFollow(false);
+      }
+    });
+  };
+  const handleBlock = (blockedUserId, followerId) => {
+    axios.post(`/block/`, { blockedUserId, user: user.id }).then((response) => {
+      console.log(response.data);
+      if (response.data.msg == "Block successful") {
+        setBlock(true);
+      } else {
+        setBlock(false);
       }
     });
   };
@@ -71,7 +95,7 @@ const Profile = () => {
               <p className="mt-1 max-w-2xl text-sm text-gray-500">
                 {profileData?.bio}
               </p>
-              <div className="mt-4">
+              <div className="mt-4 flex justify-between">
                 <button
                   onClick={() => handleFollow(profileData?._id)}
                   href="#"
@@ -84,6 +108,15 @@ const Profile = () => {
                       )
                     ? "Follow Back"
                     : "Follow"}
+                </button>
+                <button
+                  onClick={() => handleBlock(profileData?._id)}
+                  href="#"
+                  className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  {block
+                    ? "unblock"
+                    : "Block"}
                 </button>
               </div>
             </div>
