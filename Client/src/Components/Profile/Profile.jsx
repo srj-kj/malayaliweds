@@ -11,7 +11,8 @@ import { useSelector } from "react-redux";
 const ProfileTop = () => {
   const [activeTab, setActiveTab] = useState("general");
   const user = useSelector((state) => state?.app?.user);
-  
+  const [profileImage, setProfileImage] = useState(user.url);
+
   const handleTabClick = (tabId) => {
     setActiveTab(tabId);
   };
@@ -20,7 +21,12 @@ const ProfileTop = () => {
       <div className="col-span-12 ml-16 sm:col-span-9 md:col-span-9 lg:col-span-10 p-0 profile-heading">
         <div className="col-span-12 mr-12 ml-16 sm:col-span-12 w-full md:col-span-10 bg-gray-200 p-0 flex">
           <img
-            src={user.gender=="male"?"https://static.m4marry.com/ui/images/img.reg-upload-male.png":"https://static.m4marry.com/ui/images/img.reg-upload-female.png"}
+            src={
+              profileImage ||
+              (user.gender === "male"
+                ? "https://static.m4marry.com/ui/images/img.reg-upload-male.png"
+                : "https://static.m4marry.com/ui/images/img.reg-upload-female.png")
+            }
             alt=""
             height="140px"
             width="140px"
@@ -187,59 +193,53 @@ const ProfileTop = () => {
             <div className="tab-content mt-5  flex flex-row-reverse">
               <PicSetup />
               <div className="mr-32">
-              <div
-                className={activeTab === "general" ? "block" : "hidden"}
-                id="generalTab"
-              >
-                <General/>
-              </div>
-              <div
-                className={activeTab === "religious" ? "block" : "hidden"}
-                id="religiousTab"
-              >
-                <Religious/>
-              </div>
-              <div
-                className={activeTab === "education" ? "block" : "hidden"}
-                id="educationTab"
-              >
-                
-                <Education/>
-              </div>
-              <div
-                className={activeTab === "family" ? "block" : "hidden"}
-                id="familyTab"
-              >
-                <p>My Family tab content goes here</p>
-              </div>
-              <div
-                className={activeTab === "hobbies" ? "block" : "hidden"}
-                id="hobbiesTab"
-              >
-                <p>My Interests and Hobbies tab content goes here</p>
-              </div>
-              <div
-                className={activeTab === "partner" ? "block" : "hidden"}
-                id="partnerTab"
-              >
-               <Preferences/>
-              </div>
-              <div
-                className={activeTab === "contact" ? "block" : "hidden"}
-                id="contactTab"
-              >
-                <p>Contact Details tab content goes here</p>
-              </div>
+                <div
+                  className={activeTab === "general" ? "block" : "hidden"}
+                  id="generalTab"
+                >
+                  <General />
+                </div>
+                <div
+                  className={activeTab === "religious" ? "block" : "hidden"}
+                  id="religiousTab"
+                >
+                  <Religious />
+                </div>
+                <div
+                  className={activeTab === "education" ? "block" : "hidden"}
+                  id="educationTab"
+                >
+                  <Education />
+                </div>
+                <div
+                  className={activeTab === "family" ? "block" : "hidden"}
+                  id="familyTab"
+                >
+                  <p>My Family tab content goes here</p>
+                </div>
+                <div
+                  className={activeTab === "hobbies" ? "block" : "hidden"}
+                  id="hobbiesTab"
+                >
+                  <p>My Interests and Hobbies tab content goes here</p>
+                </div>
+                <div
+                  className={activeTab === "partner" ? "block" : "hidden"}
+                  id="partnerTab"
+                >
+                  <Preferences />
+                </div>
+                <div
+                  className={activeTab === "contact" ? "block" : "hidden"}
+                  id="contactTab"
+                >
+                  <p>Contact Details tab content goes here</p>
+                </div>
               </div>
             </div>
-           
           </div>
-          
-
         </div>
-        
       </div>
-      
     </>
   );
 };

@@ -16,6 +16,12 @@ const userschema = new Schema({
     required: true,
 
   },
+  profileImage:{
+    type: String
+  },
+  images:{
+    type: Array
+  },
   profileId:{
     type:Number,
     required: true,

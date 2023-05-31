@@ -21,6 +21,7 @@ const userAuthMiddleware = (
     token = req.headers.authorization.split(" ")[1];
   }
   
+  
   if (!token) {
     console.log("no token");
   }

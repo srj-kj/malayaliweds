@@ -6,8 +6,15 @@ import moment from "moment";
 import jwt from "jsonwebtoken";
 const router = express.Router();
 import { OAuth2Client } from "google-auth-library";
+
 import dotenv from "dotenv";
+import sharp from "sharp";
+import crypto from "crypto";
+import { uploadFile, deleteFile, getObjectSignedUrl } from "../helpers/s3";
+
 dotenv.config();
+const generateFileName = (bytes = 32) =>
+  crypto.randomBytes(bytes).toString("hex");
 
 const oAuth2Client = new OAuth2Client(
   process.env.CLIENT_ID,
@@ -23,7 +30,7 @@ export const login = async (req: Request, res: Response) => {
   try {
     const email = req.body.email;
     const password = req.body.password;
-    const user = await User.findOne({ email });
+    const user: any = await User.findOne({ email });
 
     if (!user) {
       return res.status(404).json({ message: "Invalid User" });
@@ -44,17 +51,21 @@ export const login = async (req: Request, res: Response) => {
       process.env.JWT_SECRET as string,
       { expiresIn: "2d" }
     );
-
-    const data = {
+    const data: any = {
       id: user._id,
       username: user.username,
       email: user.email,
       phone: user.phone,
       dob: user.dob,
       gender: user.gender,
-      profileId:user.profileId,
+      profileId: user.profileId,
       accessToken,
     };
+    if (!user?.profileImage) {
+      return res.status(200).json(data);
+    }
+    const url = await getObjectSignedUrl(user?.profileImage as string);
+    data.url = url;
     res.status(200).json(data);
   } catch (error) {
     console.error(error);
@@ -466,9 +477,32 @@ export const search = async (req: Request, res: Response) => {
 
   if (user) {
     try {
-      const people = await User.find(query).select("-password").exec();
+      let searchResults: any = await User.find(query)
+        .where("blockingUsers.blockingUserId")
+        .ne(user._id)
+        .where("blockedUsers.blockedUserId")
+        .ne(user._id)
+        .select("-password")
+        .exec();
+      // console.log(user);
+      if (searchResults) {
+        const profileImageUrl: any = searchResults.map(
+          async (person: any, index: any) => {
+            if (person.profileImage) {
+              const url = await getObjectSignedUrl(person?.profileImage);
+              person.set("url", url, { strict: false });
+            }
+            return person;
+          }
+        );
 
-      res.status(200).json(people);
+        searchResults = await Promise.all(profileImageUrl);
+
+        return res.status(200).json(searchResults);
+      }
+      console.log(searchResults);
+
+      res.status(200).json(searchResults);
     } catch (err) {
       console.log("An error occurred:", err);
     }
@@ -480,9 +514,14 @@ export const profile = async (req: Request, res: Response) => {
     const profile = await User.findById(req.params.id)
       .select("-password")
       .exec();
-
     if (!profile) {
       return res.status(404).json({ error: "Profile not found" });
+    }
+
+    if (profile.profileImage) {
+      const url = await getObjectSignedUrl(profile.profileImage);
+      profile.set("url", url, { strict: false });
+      return res.status(200).json(profile);
     }
 
     res.status(200).json(profile);
@@ -653,3 +692,89 @@ export const searchProfile = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+export const proPic = async (req: Request, res: Response) => {
+  const file = req.file;
+  const id = req.params.id;
+  const imageName = generateFileName();
+
+  const fileBuffer = await sharp(file?.buffer)
+    .resize({ height: 150, width: 150, fit: "contain" })
+    .toBuffer();
+  console.log(imageName);
+
+  await uploadFile(fileBuffer, imageName, file?.mimetype);
+  const data = { profileImage: imageName };
+  await User.findByIdAndUpdate(id, data, { upsert: true });
+  const user = await User.findById({ _id: id }).select("profileImage");
+  const url = await getObjectSignedUrl(user?.profileImage as string);
+  res.status(201).json({ msg: "profile image updated successfully", url });
+};
+
+interface UploadedFile {
+  buffer: Buffer;
+  mimetype: string;
+}
+
+interface UserDocument {
+  _id: string;
+  images: string[];
+}
+
+export const imagesUpload = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const files = req.files as UploadedFile[];
+  const id = req.params.id as string;
+  console.log(files);
+  console.log(req.file);
+
+  // Generate an array of image names for each uploaded file
+  const imageNames: string[] = files.map(() => generateFileName());
+
+  // Resize and process each image
+  const processedImages = await Promise.all(
+    files.map(async (file, index) => {
+      const fileBuffer = await sharp(file.buffer)
+        .resize({ height: 260, width: 1215, fit: "contain" })
+        .toBuffer();
+      const imageName = imageNames[index];
+      await uploadFile(fileBuffer, imageName, file.mimetype);
+      return imageName;
+    })
+  );
+
+  // Update the user document with the array of image names
+  const data: Partial<UserDocument> = { images: processedImages };
+
+  await User.findByIdAndUpdate(id, data, { upsert: true });
+
+  // Retrieve the updated user document
+  const user = await User.findById(id).select("images");
+
+  // Generate signed URLs for each image
+  if (user) {
+    const urls = await Promise.all(
+      user.images.map((image) => getObjectSignedUrl(image))
+    );
+
+    res.status(201).json({ msg: "Images uploaded successfully", urls });
+  }
+};
+
+export const getUploadedImages = async (req: Request, res: Response) => {
+  const id = req.params.id as string;
+  console.log(id);
+
+  const user = await User.findById(id).select("images");
+  if (user?.images) {
+    const urls = await Promise.all(
+      user.images.map((image) => getObjectSignedUrl(image))
+    );
+
+    res.status(201).json({ urls });
+  }
+};
+
+export const postMatch = async (req: Request, res: Response) => {};

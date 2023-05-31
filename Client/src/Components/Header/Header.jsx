@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Logo from "../../assets/Logo.png";
 import avatar from "../../assets/01.jpg";
@@ -10,7 +10,8 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state?.app?.user);
-
+   const [profileImages, setProfileImages] = useState(user.url);
+  //const profileImage = user.url
   console.log(user);
   return (
     <div className="navbar bg-white">
@@ -76,9 +77,10 @@ const Header = () => {
             <div className="w-10 rounded-full">
               <img
                 src={
-                  user.gender == "male"
+                  profileImages ||
+                  (user.gender === "male"
                     ? "https://static.m4marry.com/ui/images/img.reg-upload-male.png"
-                    : "https://static.m4marry.com/ui/images/img.reg-upload-female.png"
+                    : "https://static.m4marry.com/ui/images/img.reg-upload-female.png")
                 }
               />
             </div>

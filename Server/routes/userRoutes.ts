@@ -9,12 +9,15 @@ import {
   getGeneral,
   getPref,
   getReligion,
+  getUploadedImages,
   googleAuth,
+  imagesUpload,
   login,
   otp,
   postEducation,
   postPref,
   postreligion,
+  proPic,
   profile,
   search,
   searchProfile,
@@ -22,7 +25,10 @@ import {
 } from "../controller/userController";
 import User from "../model/userSchema";
 import userAuthMiddleware from "../middlwares/authService";
+import multer from 'multer'
 const router = express.Router();
+const storage = multer.memoryStorage()
+const upload = multer({storage: storage})
 //const controller = userController()
 router.post("/login", login);
 router.post("/signup", signup);
@@ -47,9 +53,9 @@ router.get("/profile/preferences/:id", userAuthMiddleware, getPref);
 
 router.post("/profile/preferences/:id", userAuthMiddleware, postPref);
 
-router.get("/search/:id", userAuthMiddleware, search);
+router.get("/search/:id", search);
 
-router.get("/profile/:id", userAuthMiddleware, profile);
+router.get("/profile/:id", profile);
 
 router.post("/connect/", userAuthMiddleware, connection);
 
@@ -59,6 +65,15 @@ router.post("/block/", userAuthMiddleware, block);
 
 router.post("/checkblock", userAuthMiddleware, checkBlock);
 
-router.post("/searchById", userAuthMiddleware, searchProfile);
+router.post("/searchById", searchProfile);
+
+router.post('/api/profilepic/:id',userAuthMiddleware,upload.single('profileImage'),proPic)
+
+router.post('/api/images/upload/:id',userAuthMiddleware,upload.array('images'),imagesUpload)
+
+router.get('/api/images/upload/:id',userAuthMiddleware,getUploadedImages)
+
+
+
 
 export default router;

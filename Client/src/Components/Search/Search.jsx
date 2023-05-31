@@ -23,10 +23,12 @@ const Search = () => {
     });
   }, [user.id]);
   const viewProfile = (profileId) => {
+    alert('hi')
     axios.get(`/profile/${profileId}`).then((response) => {
-      console.log(response.data.profile);
-      dispatch(profileDetails(response.data.profile));
-      navigate(`/profile/${profileId}`);
+      if(response.data){
+        dispatch(profileDetails(response.data));
+        navigate(`/profile/${profileId}`);
+      }
     });
   };
 
@@ -80,8 +82,8 @@ const Search = () => {
       </div>
 
       <div className="grid gap-4 mt-3 ml-60 mb-24 mr-24 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
-        {userProfiles.map((profile) => (
-          <div className="card bg-yellow-500 w-44  shadow-xl" key={profile._id}>
+        {userProfiles&&userProfiles?.map((profile) => (
+          <div className="card bg-yellow-500 w-44  shadow-xl" key={profile?._id}>
             <div className="card-header flex justify-end mr-3 mt-2">
               <button className="heart-button">
                 <AiOutlineHeart />
@@ -89,32 +91,33 @@ const Search = () => {
             </div>
             <figure>
               <img
-                className="mt-3"
+                className="mt-3 rounded-full"
                 src={
-                  user.gender === "female"
-                    ? "https://static.m4marry.com/ui/images/img.reg-upload-male.png"
-                    : "https://static.m4marry.com/ui/images/img.reg-upload-female.png"
+                  profile?.url ||
+                  (profile?.gender === "female"
+                    ? "https://static.m4marry.com/ui/images/img.reg-upload-female.png"
+                    : "https://static.m4marry.com/ui/images/img.reg-upload-male.png")
                 }
                 alt="profilepic"
-                height="80px"
-                width="80px"
+                height="100px"
+                width="100px"
               />
             </figure>
             <div className="card-body">
               <h2 className="card-title text-sm">
-                {profile.username}
+                {profile?.username}
                 {/* <div className="badge badge-secondary text-sm">NEW</div> */}
               </h2>
-              <p className="text-xs">{profile.age} years</p>
+              <p className="text-xs">{profile?.age} years</p>
               <div className="flex gap-4">
-                <span className="text-xs">{profile.religion}</span>
-                <span className="text-xs">{profile.Caste}</span>
+                <span className="text-xs">{profile?.religion}</span>
+                <span className="text-xs">{profile?.Caste}</span>
               </div>
               <div className="flex gap-1">
-                <span className="text-xs">{profile.country}</span>
-                <span className="text-xs">{profile.state}</span>
+                <span className="text-xs">{profile?.country}</span>
+                <span className="text-xs">{profile?.state}</span>
 
-                <span className="text-xs">{profile.city}</span>
+                <span className="text-xs">{profile?.city}</span>
               </div>
               <div className="card-actions mt-3 justify-center">
                 <button
