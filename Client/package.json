@@ -10,7 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^6.4.0",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@react-oauth/google": "^0.11.0",
+    "@react-spring/web": "^9.5.5",
     "@reduxjs/toolkit": "^1.9.5",
     "axios": "^1.4.0",
     "country-state-city": "^3.1.4",
@@ -18,6 +21,7 @@
     "date-fns": "^2.30.0",
     "dotenv": "^16.0.3",
     "firebase": "^9.21.0",
+    "howler": "^2.2.3",
     "indian-cities-json": "^2.0.0",
     "indian-religion-caste": "^1.0.3",
     "jwt-decode": "^3.1.2",
@@ -33,9 +37,12 @@
     "react-redux": "^8.0.5",
     "react-responsive-carousel": "^3.2.23",
     "react-router-dom": "^6.10.0",
+    "react-tinder-card": "^1.6.2",
     "react-toastify": "^9.1.2",
     "redux-persist": "^6.0.0",
-    "sweetalert2": "^11.7.10"
+    "socket.io-client": "^4.6.2",
+    "sweetalert2": "^11.7.10",
+    "timeago.js": "^4.0.2"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",

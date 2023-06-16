@@ -1,7 +1,8 @@
 import React from "react";
 import Profile from "../../Components/Profile/Profile";
 import Header from "../../Components/Header/Header";
-import Footer from "../../Components/Footer/Footer";
+import BottomNav from "../../Components/Header/BottomNav";
+import MobFooter from "../../Components/Footer/MobFooter";
 
 const MyDetails = () => {
   return (
@@ -18,7 +19,8 @@ const MyDetails = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      <MobFooter />
+      <BottomNav/>
     </>
   );
 };

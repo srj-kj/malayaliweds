@@ -1,0 +1,209 @@
+/* #root {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    width: 100vw;
+    min-height: 100vh;
+    overflow: hidden;
+    /* background: linear-gradient(#fff, #999); */
+    /* background: linear-gradient(#e66465, #9198e5); */
+   
+  
+  /* * {
+    user-select: none;
+  } */
+  
+  /* #root>div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  } */
+  
+  /* .app {
+    overflow-x: hidden;
+  }  */
+  
+  /* .app>div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  } */
+  
+  .row {
+    flex-direction: row !important;
+  }
+  
+  .row>* {
+    margin: 5px;
+  }
+  
+  h1 {
+    font-family: 'Damion', cursive;
+    color: #fff;
+   
+  }
+  
+  h2 {
+    color: #fff;
+  }
+  
+  .swipe {
+    position: absolute;
+  }
+  
+  /* .cardContainer {
+    width: 90vw;
+    max-width: 400px;
+    height: 100vh;
+  } */
+  
+  .card {
+    position: relative;
+    background-color: #fff;
+    width: 90vw;
+    max-width: 400px;
+    height: 70vh;
+    justify-content: center;
+    align-items: center;
+    object-fit: fill;
+    border-radius: 20px;
+    background-size: cover;
+    /* background-position: center; */
+  }
+  
+  .cardContent {
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* .swipe:last-of-type {
+  
+  } */
+  
+  .card h3 {
+    position: absolute;
+    bottom: 0;
+    margin: 10px;
+    color: #ffffff;
+  }
+  
+  .infoText {
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    color: #fff;
+    animation-name: popup;
+    animation-duration: 800ms;
+  }
+  
+  .buttons {
+    margin: 20px;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  @media (max-width: 625px) {
+    .buttons {
+      flex-direction: column;
+    }
+  }
+  
+  .buttons button {
+    flex-shrink: 0;
+    border-radius: 5px;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    transition: 200ms;
+    margin: 10px;
+    font-weight: bolder;
+    width: 160px;
+    
+  }
+  
+  .buttons button:hover {
+    transform: scale(1.05);
+  }
+  
+  @keyframes popup {
+    0%   { transform: scale(1,1) }
+    10%  { transform: scale(1.1,1.1) }
+    30%  { transform: scale(.9,.9) }
+    50%  { transform: scale(1,1) }
+    57%  { transform: scale(1,1) }
+    64%  { transform: scale(1,1) }
+    100% { transform: scale(1,1) }
+  }
+  .buttons-container {
+    display: flex;
+    justify-content: space-around;
+   
+  }
+  
+  .buttons-container button {
+    background-color: transparent;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 20px;
+  }
+
+  .cardContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 400px;
+  }
+  
+  /* .card {
+    width: 300px;
+    height: 300px;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  } */
+
+  .circle-bg-gray {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #E11299;
+    
+  }
+  
+  .circle-bg-pink:hover {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    
+  }
+
+  .circle-bg-green {
+    background-color: #00ff00; /* Replace with your desired fluorescent green color code */
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+  }
+  
+  .border-green-500 {
+    border-color: #00ff00; /* Replace with your desired fluorescent green color code */
+  }
+
+  .circle-bg-blue {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #377cd7;
+  }

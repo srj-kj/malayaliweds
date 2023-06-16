@@ -49,16 +49,15 @@ const Login = () => {
         });
     },
   });
-  
 
   const [form, setForm] = useState({});
   const handleInput = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
   const navigate = useNavigate();
-  const OtpLoginPage =()=>{
-    navigate('/otp/login')
-  }
+  const OtpLoginPage = () => {
+    navigate("/otp/login");
+  };
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
@@ -99,7 +98,7 @@ const Login = () => {
               <BsGoogle /> <span className="pl-3">Sign in with Google</span>
             </button>
             <button
-            onClick={OtpLoginPage}
+              onClick={OtpLoginPage}
               type="button"
               className="text-white  focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium  text-sm  py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2  bg-orange-300 rounded px-5 pt-2 lg:h-10  hover:bg-orange-600 h-10 w-11/12 md:w-48"
             >
@@ -160,6 +159,7 @@ const Login = () => {
           </div>
         </div>
       </div>
+
       <ToastContainer />
     </>
   );

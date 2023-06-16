@@ -19,7 +19,7 @@ const ProfileTop = () => {
   return (
     <>
       <div className="col-span-12 ml-16 sm:col-span-9 md:col-span-9 lg:col-span-10 p-0 profile-heading">
-        <div className="col-span-12 mr-12 ml-16 sm:col-span-12 w-full md:col-span-10 bg-gray-200 p-0 flex">
+        <div className="col-span-12 mr-12 sm:col-span-12 w-full md:col-span-10 bg-gray-200 p-0 flex">
           <img
             src={
               profileImage ||
@@ -99,31 +99,8 @@ const ProfileTop = () => {
           </div>
         </div>
 
-        {/* <div class="grid grid-cols-5 sm:grid-cols-3 md:grid-cols-2 gap-4">
-        <input type="hidden" id="fromPage" value="editProfile" />
-        <div class="flex flex-col justify-between">
-          <div class="pb-4">
-            <p class="text-sm font-medium">
-              We just need you to verify your email address so that you will
-              receive your daily and weekly matches and recommendations as
-              email.
-            </p>
-            <span id="resendEmailSuccess"></span>
-            <a href="#" class="text-blue-600 hover:text-blue-800">
-              Resend Verification Email
-            </a>
-            <span class="mx-2">|</span>
-            <a
-              href="https://mysite.m4marry.com/editEmail"
-              class="text-blue-600 hover:text-blue-800"
-            >
-              Edit Email
-            </a>
-          </div>
-          <span class="text-green-500 font-medium">v</span>
-        </div>
-      </div> */}
-        <div className="container mx-auto ml-16">
+        
+        <div className="container mx-auto ">
           <div className="border-b border-gray-200">
             <div className="-mb-px flex mt-3 bg-gray-300 justify-between">
               <button

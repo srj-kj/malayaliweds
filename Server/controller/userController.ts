@@ -11,6 +11,10 @@ import dotenv from "dotenv";
 import sharp from "sharp";
 import crypto from "crypto";
 import { uploadFile, deleteFile, getObjectSignedUrl } from "../helpers/s3";
+import Match from "../model/matchShema";
+import mongoose from "mongoose";
+import NotInterst from "../model/notInterestedSchema.ts";
+import Like from "../model/likeSchema";
 
 dotenv.config();
 const generateFileName = (bytes = 32) =>
@@ -474,6 +478,7 @@ export const search = async (req: Request, res: Response) => {
   } else {
     query.gender = "male";
   }
+  console.log(query);
 
   if (user) {
     try {
@@ -482,9 +487,11 @@ export const search = async (req: Request, res: Response) => {
         .ne(user._id)
         .where("blockedUsers.blockedUserId")
         .ne(user._id)
+        .where("_id")
+        .nin(await Match.distinct("matches.userId").exec())
         .select("-password")
         .exec();
-      // console.log(user);
+
       if (searchResults) {
         const profileImageUrl: any = searchResults.map(
           async (person: any, index: any) => {
@@ -511,20 +518,41 @@ export const search = async (req: Request, res: Response) => {
 
 export const profile = async (req: Request, res: Response) => {
   try {
+   
     const profile = await User.findById(req.params.id)
       .select("-password")
       .exec();
-    if (!profile) {
-      return res.status(404).json({ error: "Profile not found" });
-    }
-
-    if (profile.profileImage) {
-      const url = await getObjectSignedUrl(profile.profileImage);
-      profile.set("url", url, { strict: false });
+      if (!profile) {
+        return res.status(404).json({ error: "Profile not found" });
+      }
+      if (profile.profileImage) {
+        const url = await getObjectSignedUrl(profile.profileImage);
+        profile.set("url", url, { strict: false });
+        return res.status(200).json(profile);
+      }
+  
+      if(!req.query.user){
+        return res.status(200).json(profile);
+      }
+      const userId = mongoose.Types.ObjectId.createFromHexString(req.query.user as string);
+      const matchUser = mongoose.Types.ObjectId.createFromHexString(
+        req.params.id
+      )
+      const userMatch = await Match.findOne({
+        userId: matchUser,
+        "matches.userId": userId
+      });
+      console.log(userMatch);
+      const matched =  await Match.findOne({
+        userId: userId,
+        "matches.userId": matchUser
+      });
+      console.log(matched);
+      if(userMatch&&matched){
+        profile.set("match", true, { strict: false });
+      }
       return res.status(200).json(profile);
-    }
 
-    res.status(200).json(profile);
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
@@ -765,7 +793,6 @@ export const imagesUpload = async (
 
 export const getUploadedImages = async (req: Request, res: Response) => {
   const id = req.params.id as string;
-  console.log(id);
 
   const user = await User.findById(id).select("images");
   if (user?.images) {
@@ -777,4 +804,138 @@ export const getUploadedImages = async (req: Request, res: Response) => {
   }
 };
 
-export const postMatch = async (req: Request, res: Response) => {};
+export const matchUser = async (req: Request, res: Response) => {
+  console.log("call is coming");
+  const userId = mongoose.Types.ObjectId.createFromHexString(req.body.user);
+  const match_User = mongoose.Types.ObjectId.createFromHexString(req.body.matchUser);
+  console.log(req.body);
+
+  const userFind = await Match.findOne({ userId: userId });
+  const userMatch = await Match.findOne({
+    userId: match_User,
+    "matches.userId": userId,
+  });
+
+  console.log(userFind);
+
+  if (userFind) {
+    console.log(userFind);
+    if (userMatch) {
+      console.log(userMatch);
+      await Match.findOneAndUpdate(
+        { userId, "matches.userId": match_User },
+        { $set: { "matches.$.status": "Matched" } },
+        { upsert: true }
+
+      );
+
+      await Match.findOneAndUpdate(
+        { userId: match_User, "matches.userId": userId },
+        { $set: { "matches.$.status": "Matched" } },
+        { upsert: true }
+      );
+
+      return res.status(201).json({ msg: "Congrats", matched: true });
+    }
+
+    const matchUser = {
+      userId: match_User,
+      status: "Pending",
+    };
+    await Match.findOneAndUpdate(
+      { userId },
+      { $push: { matches: matchUser } },
+      { upsert: true }
+    );
+    res.status(201).json({ msg: "Congrats", matched: true });
+  } else {
+    const matchUser = {
+      userId: match_User,
+      status: userMatch ? "Matched" : "Pending",
+    };
+    const user = {
+      userId,
+      matches: [matchUser],
+    };
+    await Match.create(user);
+    if (userMatch) {
+      await Match.findOneAndUpdate(
+        { userId: match_User, "matches.userId": userId },
+        { $set: { "matches.$.status": "Matched" } },
+        { upsert: true }
+      );
+    }
+    res.status(201).json({ msg: "Congrats", matched: true });
+  }
+};
+
+
+export const undomatch = async (req: Request, res: Response) => {
+  console.log("call is undo call coming");
+
+  console.log(req.body);
+  const userId = mongoose.Types.ObjectId.createFromHexString(req.body.user);
+  const match_User = mongoose.Types.ObjectId.createFromHexString(
+    req.body.matchUser
+  );
+  const userFind = await Match.findOne({ userId });
+  const userMatch = await Match.findOne({
+    userId: match_User,
+    "matches.userId": userId,
+  });
+
+  if (userFind && userMatch) {
+    await Match.findOneAndUpdate(
+      { userId },
+      { $pull: { matches: { userId: match_User } } },
+      { upsert: true }
+    );
+    await Match.findOneAndUpdate(
+      { userId: match_User, "matches.userId": userId },
+      { $set: { "matches.$.status": "Pending" } },
+      { upsert: true }
+    );
+    return res.status(201).json({ msg: "Match undone", mactched: false });
+  } else {
+    await Match.findOneAndUpdate(
+      { userId },
+      { $pull: { matches: { userId: match_User } } },
+      { upsert: true }
+    );
+    return res.status(201).json({ msg: "Match undone", mactched: false });
+  }
+
+  res.status(400).json({ msg: "No match found" });
+};
+
+export const notinterest = async (req: Request, res: Response) => {
+  console.log(req.body);
+  const userId = mongoose.Types.ObjectId.createFromHexString(req.body.user);
+  // const userFind = await NotInterst.findOne({ userId });
+  await NotInterst.findByIdAndUpdate(
+    userId,
+    { $push: { NotInterst: req.body.removeUser } },
+    { upsert: true }
+  );
+};
+export const undoRemove = async (req: Request, res: Response) => {
+  console.log(req.body);
+  const userId = mongoose.Types.ObjectId.createFromHexString(req.body.user);
+  // const userFind = await NotInterst.findOne({ userId });
+  await NotInterst.findByIdAndUpdate(
+    userId,
+    { $pull: { NotInterst: req.body.removeUser } },
+    { upsert: true }
+  );
+};
+
+export const like = async (req: Request, res: Response) => {
+  console.log(req.body);
+  const userId = mongoose.Types.ObjectId.createFromHexString(req.body.user);
+  // const userFind = await NotInterst.findOne({ userId });
+  await Like.findByIdAndUpdate(
+    userId,
+    { $push: { interested: req.body.likedUser } },
+    { upsert: true }
+  );
+};

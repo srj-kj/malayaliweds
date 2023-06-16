@@ -24,7 +24,7 @@ const Profile = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   useEffect(() => {
     axios
-      .get(`/profile/${id}`)
+      .get(`/profile/${id}?user=${user.id}`)
       .then((response) => {
         console.log(response.data);
         setProfileData(response.data);
@@ -130,6 +130,15 @@ const Profile = () => {
   };
   if (!profileData) {
     return <div>Profile not found</div>;
+  }
+  const handleChat =(id)=>{
+    const data ={
+      senderId:user.id,
+      receiverId:id
+    }
+    axios.post('/conversations',data).then(()=>{
+      navigate('/messages')
+    })
   }
   return (
     <div>
@@ -241,6 +250,10 @@ const Profile = () => {
                     ? "Follow Back"
                     : "Follow"}
                 </button>
+                {
+                  profileData.match&&
+                  <button className="btn btn-primary bg-slate-600" onClick={()=>handleChat(profileData._id)}>CHAT</button>
+                }
                 <button
                   onClick={() => handleBlock(profileData?._id)}
                   href="#"

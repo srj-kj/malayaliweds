@@ -12,7 +12,10 @@ import {
   getUploadedImages,
   googleAuth,
   imagesUpload,
+  like,
   login,
+  matchUser,
+  notinterest,
   otp,
   postEducation,
   postPref,
@@ -22,14 +25,16 @@ import {
   search,
   searchProfile,
   signup,
+  undoRemove,
+  undomatch,
 } from "../controller/userController";
-import User from "../model/userSchema";
+
 import userAuthMiddleware from "../middlwares/authService";
-import multer from 'multer'
+import multer from "multer";
 const router = express.Router();
-const storage = multer.memoryStorage()
-const upload = multer({storage: storage})
-//const controller = userController()
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 router.post("/login", login);
 router.post("/signup", signup);
 
@@ -57,23 +62,28 @@ router.get("/search/:id", search);
 
 router.get("/profile/:id", profile);
 
-router.post("/connect/", userAuthMiddleware, connection);
+router.post("/connect/", connection);
 
-router.post("/follow", userAuthMiddleware, follow);
+router.post("/follow", follow);
 
-router.post("/block/", userAuthMiddleware, block);
+router.post("/block/", block);
 
-router.post("/checkblock", userAuthMiddleware, checkBlock);
+router.post("/checkblock", checkBlock);
 
 router.post("/searchById", searchProfile);
 
-router.post('/api/profilepic/:id',userAuthMiddleware,upload.single('profileImage'),proPic)
+router.post("/api/profilepic/:id", upload.single("profileImage"), proPic);
 
-router.post('/api/images/upload/:id',userAuthMiddleware,upload.array('images'),imagesUpload)
+router.post("/api/images/upload/:id", upload.array("images"), imagesUpload);
 
-router.get('/api/images/upload/:id',userAuthMiddleware,getUploadedImages)
+router.get("/api/images/upload/:id", getUploadedImages);
 
+router.post("/api/match",matchUser)
+router.post("/api/undomatch",undomatch)
 
+router.post("/api/notinterest",notinterest)
+router.post("/api/undoremove",undoRemove)
+router.post("/api/like",like)
 
 
 export default router;

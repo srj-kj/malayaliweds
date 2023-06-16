@@ -12,6 +12,7 @@ import GroupSection from "../../Components/LandingPage/Story";
 import Footer from "../../Components/Footer/Footer";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../Redux/userSlice";
+import BottomNav from "../../Components/Header/BottomNav";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -284,9 +285,17 @@ const Home = () => {
             </div>
           </div>
         </div>
-
+        
         <Footer />
       </div>
+      {user.isLogged ? (<BottomNav/>):(<div className="fixed sm:block mb-1 md:hidden bottom-0 w-full bg-yellow-400">
+  <div className="sticky bottom-0 z-10 bg-red-600">
+    <nav className="py-3 md:mt-0 text-center sticky top-0 z-10 bg-red-600  ">
+      <Link className="font-bold text-white" to="/register">Register Now</Link>
+    </nav>
+  </div>
+</div>)}
+
       <style>{`
         #age  option {
           color: #8B5CF6;

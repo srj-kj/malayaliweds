@@ -14,6 +14,8 @@ import OtpLoginPage from "./Components/OTP/OtpLoginPage";
 import MyDetails from "./Pages/Profile/Profile";
 import Profiles from "./Pages/Profiles/Profiles";
 import Profile from "./Pages/ProfileDetails/ProfileDetails";
+import Messenger from "./Pages/Messenger/Messenger";
+import Subscription from "./Pages/Subscription/Subscription";
 const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
 console.log(CLIENT_ID);
 function App() {
@@ -45,6 +47,9 @@ function App() {
             <Route path="/otp/login" element={<OtpLoginPage/>} />
             <Route path="/search" element={<Profiles/>} />
             <Route path="/profile/:id" element={<Profile/>} />
+            <Route path="/messages" element={<Messenger/>} />
+            <Route path="/payment" element={<Subscription/>} />
+
 
           </Routes>
         </BrowserRouter>
